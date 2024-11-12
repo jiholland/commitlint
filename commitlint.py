@@ -1,7 +1,17 @@
 #!/usr/bin/env python3
 """
-Python module that will lint commit messages according to the conventional commit scheme.
-Usage: ./commitlint.py
+Python module that will lint commit messages according to https://www.conventionalcommits.org
+Intended to be used in a Git CI/CD pipeline.
+
+Usage:
+    Run without arguments.
+    $ python3 commitlint.py
+
+    Pass the Git root directory as an argument.
+    $ python3 commitlint.py "$(realpath git_example_root_dir)"
+
+    Pass the GitLab project directory as an argument.
+    $ python3 commitlint.py $CI_PROJECT_DIR
 """
 __version__ = "24.11.0"
 __author__ = "Jorn Ivar Holland"
@@ -9,13 +19,13 @@ __author__ = "Jorn Ivar Holland"
 import subprocess
 import sys
 
-def commit_msg():
+def commit_msg(path="."):
     """
     Return the latest commit message if we are in a Git repo.
     """
-    if subprocess.run(["git", "status"], stdout = subprocess.DEVNULL, check=True):
-        commit = subprocess.run(["git", "log", "-1", "--pretty=%B"],
-                            capture_output=True, text=True, check=False)
+    if subprocess.run(["git", "-C", path, "status"], stdout = subprocess.DEVNULL, check=True):
+        commit = subprocess.run(["git", "-C", path, "log", "-1", "--pretty=%B"],
+                                capture_output=True, text=True, check=False)
         return commit.stdout
     return None
 
@@ -145,20 +155,21 @@ def main():
     Exit with none-zero return code if errors are found.
     """
     error_count = 0
+    last_commit = commit_msg(sys.argv[1])
 
-    if header_type(commit_msg()):
+    if header_type(last_commit):
         error_count += 1
-    if subject_empty(commit_msg()):
+    if subject_empty(last_commit):
         error_count += 1
-    if subject_length(commit_msg()):
+    if subject_length(commit_msg):
         error_count += 1
-    if subject_case(commit_msg()):
+    if subject_case(commit_msg):
         error_count += 1
-    if subject_full_stop(commit_msg()):
+    if subject_full_stop(commit_msg):
         error_count += 1
-    if body_leading_blank(commit_msg()):
+    if body_leading_blank(commit_msg):
         error_count += 1
-    if body_max_length(commit_msg()):
+    if body_max_length(commit_msg):
         error_count += 1
 
     if error_count > 0:
