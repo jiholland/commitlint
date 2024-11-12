@@ -161,15 +161,15 @@ def main():
         error_count += 1
     if subject_empty(last_commit):
         error_count += 1
-    if subject_length(commit_msg):
+    if subject_length(last_commit):
         error_count += 1
-    if subject_case(commit_msg):
+    if subject_case(last_commit):
         error_count += 1
-    if subject_full_stop(commit_msg):
+    if subject_full_stop(last_commit):
         error_count += 1
-    if body_leading_blank(commit_msg):
+    if body_leading_blank(last_commit):
         error_count += 1
-    if body_max_length(commit_msg):
+    if body_max_length(last_commit):
         error_count += 1
 
     if error_count > 0:
