@@ -124,7 +124,7 @@ def body_leading_blank(commit_message):
     for line in commit_message.splitlines():
         count += 1
         if count == 2 and line.strip() != "":
-            print("Body should have a leading blank line.")
+            print("Body must have a leading blank line.")
             return True
 
 def body_max_length(commit_message):
